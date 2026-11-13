@@ -28,8 +28,8 @@
         button { background-color: #00558f; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-weight: 600; }
         button:hover { background-color: #003366; }
         .btn-logout { background-color: #d9534f; padding: 8px 15px; font-size: 13px; }
-        .btn-logout:hover { background-color: #c9302c; }
         .msg-box { background: #e8f4fd; padding: 15px; border-left: 4px solid #00558f; margin-bottom: 10px; border-radius: 4px; }
+        .footer { text-align: center; margin-top: 30px; color: #777; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -47,6 +47,7 @@
             <input type="password" id="loginPass" placeholder="1234">
         </div>
         <button style="width: 100%;" onclick="handleLogin()">පද්ධතියට පිවිසෙන්න (Login)</button>
+        <p style="margin-top: 20px; font-size: 11px; color: #999;">Powered by Nuvia Labs</p>
     </div>
 </div>
 
@@ -100,12 +101,12 @@
         <div id="tab-attendance" class="card">
             <h2>දෛනික පැමිණීම සටහන් කිරීම (Daily Attendance)</h2>
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
-                <div class="form-group"><label>ශිෂ්‍ය ID අංකය:</label><input type="number" id="attStudentId" placeholder="1"></div>
-                <div class="form-group"><label>පන්ති ID අංකය:</label><input type="number" id="attClassId" placeholder="1"></div>
+                <div class="form-group"><label>ඇතුළත් වීමේ අංකය (Admission No):</label><input type="text" id="attAdmNo" placeholder="2026-001"></div>
+                <div class="form-group"><label>පන්තිය (උදා: 2026-1-A):</label><input type="text" id="attClassCode" placeholder="2026-1-A"></div>
                 <div class="form-group"><label>තත්ත්වය:</label>
                     <select id="attStatus">
-                        <option value="true">පැමිණ ඇත (Present)</option>
-                        <option value="false">නොපැමිණ ඇත (Absent)</option>
+                        <option value="Present">පැමිණ ඇත (Present)</option>
+                        <option value="Absent">නොපැමිණ ඇත (Absent)</option>
                     </select>
                 </div>
             </div>
@@ -115,7 +116,7 @@
         <div id="tab-marks" class="card">
             <h2>වාර විභාග ලකුණු ඇතුළත් කිරීම (Exam Marks)</h2>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group"><label>ශිෂ්‍ය ID අංකය:</label><input type="number" id="mStudentId" placeholder="1"></div>
+                <div class="form-group"><label>ඇතුළත් වීමේ අංකය (Admission No):</label><input type="text" id="mAdmNo" placeholder="2026-001"></div>
                 <div class="form-group"><label>වර්ෂය:</label><input type="number" id="mYear" value="2026"></div>
                 <div class="form-group"><label>වාරය (Term 1, 2, 3):</label><input type="number" id="mTerm" placeholder="1"></div>
                 <div class="form-group"><label>විෂය (Subject):</label><input type="text" id="mSubject" placeholder="ගණිතය"></div>
@@ -126,149 +127,168 @@
 
         <div id="tab-messages" class="card">
             <h2>දෙමාපියන් වෙත පණිවිඩයක් යැවීම</h2>
-            <div class="form-group"><label>පන්තියේ ID අංකය:</label><input type="number" id="sendClassId" placeholder="1"></div>
+            <div class="form-group"><label>පන්තියේ කේතය (උදා: 2026-1-A):</label><input type="text" id="sendClassCode" placeholder="2026-1-A"></div>
             <div class="form-group"><label>පණිවිඩය:</label><textarea id="messageText" rows="3" placeholder="හෙට දින විශේෂ රැස්වීමක් පැවැත්වේ..."></textarea></div>
             <button onclick="sendMessage()">පණිවිඩය යවන්න</button>
 
             <h2 style="margin-top: 30px;">පන්තියේ පණිවිඩ බැලීම</h2>
-            <div class="form-group"><label>පන්තියේ ID අංකය:</label><input type="number" id="viewClassId" placeholder="1"></div>
+            <div class="form-group"><label>පන්තියේ කේතය (උදා: 2026-1-A):</label><input type="text" id="viewClassCode" placeholder="2026-1-A"></div>
             <button onclick="loadMessages()">පණිවිඩ පෙන්වන්න</button>
             <div id="messagesList" style="margin-top: 15px;"></div>
         </div>
 
         <div id="tab-shuffle" class="card">
             <h2>වාර්ෂික පන්ති මාරු කිරීම (1-A සිට 2-D දක්වා)</h2>
-            <p>නව වසර සඳහා ළමුන් අලුත් පන්තිවලට මාරු කිරීමට සකස් කළ CSV ගොනුව තෝරන්න.</p>
+            <p>නව වසර සඳහා ළමුන් අලුත් පන්තිවලට මාරු කිරීමට CSV ගොනුව තෝරන්න (Columns: admission_no,academic_year,grade,stream,section).</p>
             <div class="form-group"><input type="file" id="csvFile" accept=".csv"></div>
             <button onclick="uploadCSV()">CSV ගොනුව Upload කරන්න</button>
         </div>
-    </div>
-</div>
-<script>
-  const API_URL = "";
+
+        <div class="footer">හ/ගැටමාන්න දකුණ මහා විද්‍යාලය | Powered by Nuvia Labs</div>
+---
+
+### කොටස 2: ඔබේ Firebase Config සමඟ සම්බන්ධ කර ඇති JavaScript කොටස (මෙය ඊට යටින් Paste කරන්න)
+
+```javascript
+<script type="module">
+    import { initializeApp } from "https://gstatic.com";
+    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://gstatic.com";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAjYvet05v6rzEIzBhp4vtxw-C5IGWeW2c",
+        authDomain: "://firebaseapp.com",
+        projectId: "getamanna-south-mv",
+        storageBucket: "getamanna-south-mv.firebasestorage.app",
+        messagingSenderId: "105394338078",
+        appId: "1:105394338078:web:0d8d2296c495a97e37310f",
+        measurementId: "G-RX0Q3YZ91W"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
     let currentUser = null;
 
-    function showTab(tabId, element) {
+    window.showTab = function(tabId, element) {
         document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
         document.getElementById(tabId).classList.add('active');
         element.classList.add('active');
-    }
+    };
 
-    async function handleLogin() {
-        const username = document.getElementById("loginUser").value;
-        const password = document.getElementById("loginPass").value;
-        try {
-            const res = await fetch(`${API_URL}/login/`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, password })
-            });
-            if (!res.ok) throw new Error("වැරදි පරිශීලක නාමයක් හෝ මුරපදයකි!");
-            currentUser = await res.json();
+    window.handleLogin = function() {
+        const u = document.getElementById("loginUser").value;
+        const p = document.getElementById("loginPass").value;
+        if (u === "admin" && p === "1234") {
+            currentUser = { full_name: "ප්‍රධාන පරිපාලක (විදුහල්පති)", role: "ADMIN" };
             document.getElementById("loginScreen").style.display = "none";
             document.getElementById("dashboard").style.display = "block";
-            document.getElementById("welcomeText").innerText = `ආයුබෝවන්, ${currentUser.full_name} (${currentUser.role.toUpperCase()})`;
-        } catch (err) {
-            alert(err.message + "\n(සටහන: Backend Server එක ක්‍රියාත්මක වන බව තහවුරු කර ගන්න)");
+            document.getElementById("welcomeText").innerText = `ආයුබෝවන්, ${currentUser.full_name}`;
+        } else {
+            alert("වැරදි පරිශීලක නාමයක් හෝ මුරපදයකි! (admin / 1234)");
         }
-    }
+    };
 
-    function logout() {
+    window.logout = function() {
         currentUser = null;
         document.getElementById("dashboard").style.display = "none";
         document.getElementById("loginScreen").style.display = "flex";
-    }
+    };
 
-    async function createClass() {
-        const data = {
-            academic_year: parseInt(document.getElementById("cYear").value),
-            grade: parseInt(document.getElementById("cGrade").value),
-            stream: document.getElementById("cStream").value,
-            section: document.getElementById("cSection").value,
+    window.createClass = async function() {
+        const year = document.getElementById("cYear").value;
+        const grade = document.getElementById("cGrade").value;
+        const stream = document.getElementById("cStream").value;
+        const section = document.getElementById("cSection").value;
+        const classCode = stream === "General" ? `${year}-${grade}-${section}` : `${year}-${grade}-${stream}-${section}`;
+        
+        await addDoc(collection(db, "classes"), {
+            class_code: classCode,
+            academic_year: parseInt(year),
+            grade: parseInt(grade),
+            stream: stream,
+            section: section,
             teacher_name: document.getElementById("cTeacher").value
-        };
-        const res = await fetch(`${API_URL}/classes/`, {
-            method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data)
         });
-        const result = await res.json();
-        alert(`පන්තිය සාර්ථකව සාදන ලදී! (Class ID: ${result.id})`);
-    }
+        alert(`පන්තිය සාර්ථකව සාදන ලදී! පන්ති කේතය: ${classCode}`);
+    };
 
-    async function createStudent() {
-        const data = {
+    window.createStudent = async function() {
+        await addDoc(collection(db, "students"), {
             admission_no: document.getElementById("sAdm").value,
             full_name: document.getElementById("sName").value,
             parent_name: document.getElementById("sParent").value,
             parent_phone: document.getElementById("sPhone").value
-        };
-        const res = await fetch(`${API_URL}/students/`, {
-            method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data)
         });
-        const result = await res.json();
-        alert(`ශිෂ්‍යයා ඇතුළත් කරන ලදී! (Student ID: ${result.id})`);
-    }
+        alert("ශිෂ්‍යයා Firebase Database වෙත සාර්ථකව ඇතුළත් කරන ලදී!");
+    };
 
-    async function markAttendance() {
-        const data = {
-            student_id: parseInt(document.getElementById("attStudentId").value),
-            class_id: parseInt(document.getElementById("attClassId").value),
-            is_present: document.getElementById("attStatus").value === "true"
-        };
-        const res = await fetch(`${API_URL}/attendance/`, {
-            method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data)
+    window.markAttendance = async function() {
+        await addDoc(collection(db, "attendance"), {
+            admission_no: document.getElementById("attAdmNo").value,
+            class_code: document.getElementById("attClassCode").value,
+            status: document.getElementById("attStatus").value,
+            date: new Date().toISOString().split('T')[0]
         });
-        const result = await res.json();
-        alert(result.message);
-    }
+        alert("පැමිණීම සටහන් කරන ලදී!");
+    };
 
-    async function addMark() {
-        const data = {
-            student_id: parseInt(document.getElementById("mStudentId").value),
+    window.addMark = async function() {
+        await addDoc(collection(db, "marks"), {
+            admission_no: document.getElementById("mAdmNo").value,
             academic_year: parseInt(document.getElementById("mYear").value),
             term: parseInt(document.getElementById("mTerm").value),
             subject: document.getElementById("mSubject").value,
             marks: parseFloat(document.getElementById("mScore").value)
-        };
-        const res = await fetch(`${API_URL}/marks/`, {
-            method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data)
         });
-        const result = await res.json();
-        alert(result.message);
-    }
+        alert("විභාග ලකුණු ඇතුළත් කරන ලදී!");
+    };
 
-    async function sendMessage() {
-        const data = {
-            class_id: parseInt(document.getElementById("sendClassId").value),
+    window.sendMessage = async function() {
+        await addDoc(collection(db, "messages"), {
+            class_code: document.getElementById("sendClassCode").value,
             sender_name: currentUser ? currentUser.full_name : "ගුරුවරයා",
-            message_text: document.getElementById("messageText").value
-        };
-        const res = await fetch(`${API_URL}/send-message/`, {
-            method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data)
+            message_text: document.getElementById("messageText").value,
+            created_at: new Date().toLocaleString()
         });
-        const result = await res.json();
-        alert(result.message);
-    }
+        alert("පන්තියේ දෙමාපියන් වෙත පණිවිඩය යොමු කරන ලදී!");
+    };
 
-    async function loadMessages() {
-        const classId = document.getElementById("viewClassId").value;
-        const res = await fetch(`${API_URL}/messages/${classId}`);
-        const messages = await res.json();
+    window.loadMessages = async function() {
+        const code = document.getElementById("viewClassCode").value;
+        const q = query(collection(db, "messages"), where("class_code", "==", code));
+        const snapshot = await getDocs(q);
         const listDiv = document.getElementById("messagesList");
         listDiv.innerHTML = "";
-        messages.forEach(m => {
-            listDiv.innerHTML += `<div class="msg-box"><strong>${m.sender_name}:</strong><p>${m.message_text}</p></div>`;
+        snapshot.forEach(doc => {
+            const m = doc.data();
+            listDiv.innerHTML += `<div class="msg-box"><strong>${m.sender_name} (${m.created_at}):</strong><p>${m.message_text}</p></div>`;
         });
-    }
+        if (snapshot.empty) listDiv.innerHTML = "<p>මෙම පන්තිය සඳහා පණිවිඩ නොමැත.</p>";
+    };
 
-    async function uploadCSV() {
-        const fileInput = document.getElementById("csvFile");
-        const formData = new FormData();
-        formData.append("file", fileInput.files);
-        const res = await fetch(`${API_URL}/bulk-shuffle/`, { method: "POST", body: formData });
-        const result = await res.json();
-        alert(`මාරු කළ ළමුන් ගණන: ${result.moved_students_count}`);
-    }
+    window.uploadCSV = function() {
+        const file = document.getElementById("csvFile").files[0];
+        if (!file) return alert("කරුණාකර CSV ගොනුවක් තෝරන්න!");
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const lines = e.target.result.split("\n").slice(1);
+            let count = 0;
+            for (let line of lines) {
+                if (!line.trim()) continue;
+                const [adm, year, grade, stream, section] = line.split(",");
+                const st = (stream || "General").trim();
+                const classCode = st === "General" ? `${year.trim()}-${grade.trim()}-${section.trim()}` : `${year.trim()}-${grade.trim()}-${st}-${section.trim()}`;
+                await addDoc(collection(db, "enrollments"), {
+                    admission_no: adm.trim(),
+                    academic_year: parseInt(year.trim()),
+                    class_code: classCode
+                });
+                count++;
+            }
+            alert(`ළමුන් ${count} දෙනෙකු නව පන්තිවලට සාර්ථකව මාරු කරන ලදී!`);
+        };
+        reader.readAsText(file);
+    };
 </script>
 </body>
 </html>
