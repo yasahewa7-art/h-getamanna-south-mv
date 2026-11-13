@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>හ/ගැටමාන්න දකුණ මහා විද්‍යාලය - දෙමාපිය ගුරු සම්බන්ධතා පද්ධතිය</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .header { background-color: #1b4f72; color: white; padding: 20px; text-align: center; border-radius: 8px; }
+        .container { max-width: 800px; margin: 20px auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h2 { color: #1b4f72; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #2874a6; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #1b4f72; }
+        .msg-box { background: #eaf2f8; padding: 15px; border-left: 4px solid #2874a6; margin-bottom: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>හ/ගැටමාන්න දකුණ මහා විද්‍යාලය</h1>
+    <p>දෙමාපිය - ගුරු සම්බන්ධතා සහ පන්ති කළමනාකරණ පද්ධතිය (1 - 13 ශ්‍රේණි)</p>
+</div>
+
+<!-- 1. ගුරුවරුන් සඳහා: පන්තියට පණිවිඩයක් යැවීම -->
+<div class="container">
+    <h2>1. දෙමාපියන් වෙත පණිවිඩයක් යැවීම (ගුරු අංශය)</h2>
+    <div class="form-group">
+        <label>පන්තියේ ID අංකය (උදා: 1-A සඳහා 1):</label>
+        <input type="number" id="sendClassId" placeholder="1">
+    </div>
+    <div class="form-group">
+        <label>ගුරුවරයාගේ නම:</label>
+        <input type="text" id="senderName" placeholder="උදා: කුමාරි මහත්මිය (පන්ති භාර ගුරු)">
+    </div>
+    <div class="form-group">
+        <label>පණිවිඩය:</label>
+        <textarea id="messageText" rows="3" placeholder="හෙට දින විශේෂ රැස්වීමක් පැවැත්වේ..."></textarea>
+    </div>
+    <button onclick="sendMessage()">පණිවිඩය යවන්න</button>
+</div>
+
+<!-- 2. දෙමාපියන් සඳහා: පන්තියේ පණිවිඩ බැලීම -->
+<div class="container">
+    <h2>2. පන්තියේ නිවේදන බැලීම (දෙමාපිය අංශය)</h2>
+    <div class="form-group">
+        <label>දරුවාගේ පන්තියේ ID අංකය ඇතුළත් කරන්න:</label>
+        <input type="number" id="viewClassId" placeholder="1">
+    </div>
+    <button onclick="loadMessages()">පණිවිඩ පෙන්වන්න</button>
+    <div id="messagesList" style="margin-top: 20px;"></div>
+</div>
+
+<!-- 3. පරිපාලනය සඳහා: වාර්ෂික පන්ති මාරු කිරීම (1-A සිට 2-D දක්වා) -->
+<div class="container">
+    <h2>3. වාර්ෂික පන්ති මාරු කිරීම (Bulk Class Shuffling)</h2>
+    <p>නව වසර සඳහා ළමුන් අලුත් පන්තිවලට (උදා: 1-A සිට 2-D වෙත) මාරු කිරීමට CSV ගොනුව තෝරන්න.</p>
+    <div class="form-group">
+        <input type="file" id="csvFile" accept=".csv">
+    </div>
+    <button onclick="uploadCSV()">CSV ගොනුව Upload කරන්න</button>
+</div>
+
+<script>
+    const API_URL = "http://127.0.0.1:8000";
+
+    async function sendMessage() {
+        const data = {
+            class_id: parseInt(document.getElementById("sendClassId").value),
+            sender_name: document.getElementById("senderName").value,
+            message_text: document.getElementById("messageText").value
+        };
+        const res = await fetch(`${API_URL}/send-message/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        alert(result.message);
+    }
+
+    async function loadMessages() {
+        const classId = document.getElementById("viewClassId").value;
+        const res = await fetch(`${API_URL}/messages/${classId}`);
+        const messages = await res.json();
+        const listDiv = document.getElementById("messagesList");
+        listDiv.innerHTML = "";
+        messages.forEach(m => {
+            listDiv.innerHTML += `<div class="msg-box"><strong>${m.sender_name}:</strong><p>${m.message_text}</p></div>`;
+        });
+    }
+
+    async function uploadCSV() {
+        const fileInput = document.getElementById("csvFile");
+        const formData = new FormData();
+        formData.append("file", fileInput.files[0]);
+        const res = await fetch(`${API_URL}/bulk-shuffle/`, {
+            method: "POST",
+            body: formData
+        });
+        const result = await res.json();
+        alert(`මාරු කළ ළමුන් ගණන: ${result.moved_students_count}`);
+    }
+</script>
+
+</body>
+</html>
