@@ -148,22 +148,9 @@
     </div>
 </div>
 <script type="module">
-    import { initializeApp } from "https://gstatic.com";
-    import { getFirestore, collection, addDoc, getDocs, query, where } from "https://gstatic.com";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyAjYvet05v6rzEIzBhp4vtxw-C5IGWeW2c",
-        authDomain: "://firebaseapp.com",
-        projectId: "getamanna-south-mv",
-        storageBucket: "getamanna-south-mv.firebasestorage.app",
-        messagingSenderId: "105394338078",
-        appId: "1:105394338078:web:0d8d2296c495a97e37310f",
-        measurementId: "G-RX0Q3YZ91W"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
     let currentUser = null;
+    let db = null;
+    let firestoreOps = {};
 
     window.showTab = function(tabId, element) {
         document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
@@ -173,8 +160,8 @@
     };
 
     window.handleLogin = function() {
-        const u = document.getElementById("loginUser").value;
-        const p = document.getElementById("loginPass").value;
+        const u = document.getElementById("loginUser").value.trim();
+        const p = document.getElementById("loginPass").value.trim();
         if (u === "admin" && p === "1234") {
             currentUser = { full_name: "ප්‍රධාන පරිපාලක (විදුහල්පති)", role: "ADMIN" };
             document.getElementById("loginScreen").style.display = "none";
@@ -191,6 +178,30 @@
         document.getElementById("loginScreen").style.display = "flex";
     };
 
+    async function initFirebase() {
+        try {
+            const base = ["https:", "", "://gstatic.com", "firebasejs", "10.12.2", ""].join("/");
+            const appMod = await import(base + "firebase-app.js");
+            const fsMod = await import(base + "firebase-firestore.js");
+            const proj = "getamanna-south-mv";
+            const firebaseConfig = {
+                apiKey: "AIzaSyAjYvet05v6rzEIzBhp4vtxw-C5IGWeW2c",
+                authDomain: proj + ".firebaseapp.com",
+                projectId: proj,
+                storageBucket: proj + ".firebasestorage.app",
+                messagingSenderId: "105394338078",
+                appId: "1:105394338078:web:0d8d2296c495a97e37310f",
+                measurementId: "G-RX0Q3YZ91W"
+            };
+            const app = appMod.initializeApp(firebaseConfig);
+            db = fsMod.getFirestore(app);
+            firestoreOps = fsMod;
+        } catch (e) {
+            console.error("Firebase init error:", e);
+        }
+    }
+    initFirebase();
+
     window.createClass = async function() {
         const year = document.getElementById("cYear").value;
         const grade = document.getElementById("cGrade").value;
@@ -198,7 +209,7 @@
         const section = document.getElementById("cSection").value;
         const classCode = stream === "General" ? `${year}-${grade}-${section}` : `${year}-${grade}-${stream}-${section}`;
         
-        await addDoc(collection(db, "classes"), {
+        await firestoreOps.addDoc(firestoreOps.collection(db, "classes"), {
             class_code: classCode,
             academic_year: parseInt(year),
             grade: parseInt(grade),
@@ -210,7 +221,7 @@
     };
 
     window.createStudent = async function() {
-        await addDoc(collection(db, "students"), {
+        await firestoreOps.addDoc(firestoreOps.collection(db, "students"), {
             admission_no: document.getElementById("sAdm").value,
             full_name: document.getElementById("sName").value,
             parent_name: document.getElementById("sParent").value,
@@ -220,7 +231,7 @@
     };
 
     window.markAttendance = async function() {
-        await addDoc(collection(db, "attendance"), {
+        await firestoreOps.addDoc(firestoreOps.collection(db, "attendance"), {
             admission_no: document.getElementById("attAdmNo").value,
             class_code: document.getElementById("attClassCode").value,
             status: document.getElementById("attStatus").value,
@@ -230,7 +241,7 @@
     };
 
     window.addMark = async function() {
-        await addDoc(collection(db, "marks"), {
+        await firestoreOps.addDoc(firestoreOps.collection(db, "marks"), {
             admission_no: document.getElementById("mAdmNo").value,
             academic_year: parseInt(document.getElementById("mYear").value),
             term: parseInt(document.getElementById("mTerm").value),
@@ -241,7 +252,7 @@
     };
 
     window.sendMessage = async function() {
-        await addDoc(collection(db, "messages"), {
+        await firestoreOps.addDoc(firestoreOps.collection(db, "messages"), {
             class_code: document.getElementById("sendClassCode").value,
             sender_name: currentUser ? currentUser.full_name : "ගුරුවරයා",
             message_text: document.getElementById("messageText").value,
@@ -252,8 +263,8 @@
 
     window.loadMessages = async function() {
         const code = document.getElementById("viewClassCode").value;
-        const q = query(collection(db, "messages"), where("class_code", "==", code));
-        const snapshot = await getDocs(q);
+        const q = firestoreOps.query(firestoreOps.collection(db, "messages"), firestoreOps.where("class_code", "==", code));
+        const snapshot = await firestoreOps.getDocs(q);
         const listDiv = document.getElementById("messagesList");
         listDiv.innerHTML = "";
         snapshot.forEach(doc => {
@@ -275,7 +286,7 @@
                 const [adm, year, grade, stream, section] = line.split(",");
                 const st = (stream || "General").trim();
                 const classCode = st === "General" ? `${year.trim()}-${grade.trim()}-${section.trim()}` : `${year.trim()}-${grade.trim()}-${st}-${section.trim()}`;
-                await addDoc(collection(db, "enrollments"), {
+                await firestoreOps.addDoc(firestoreOps.collection(db, "enrollments"), {
                     admission_no: adm.trim(),
                     academic_year: parseInt(year.trim()),
                     class_code: classCode
