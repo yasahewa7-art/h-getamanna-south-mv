@@ -2,6 +2,7 @@ import csv
 import io
 from typing import Optional
 from fastapi import FastAPI, Depends, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from pydantic import BaseModel
@@ -15,6 +16,15 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="H/Getamanna South MV - Grade 1-13 Parent Teacher System")
+
+# Frontend වෙබ් පිටුවට Backend සමඟ සම්බන්ධ වීමට අවසර දීම (CORS)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def get_db():
     db = SessionLocal()
