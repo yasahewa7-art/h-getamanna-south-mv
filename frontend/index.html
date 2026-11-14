@@ -3,311 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>හ/ගැටමාන්න දකුණ මහා විද්‍යාලය - PowerSchool ERP</title>
-    <style>
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { margin: 0; background-color: #f0f4f8; color: #333; }
-        #loginScreen { display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, #003366, #006699); }
-        .login-box { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.2); width: 100%; max-width: 400px; text-align: center; }
-        .login-box h2 { color: #003366; margin-bottom: 5px; }
-        .login-box p { color: #666; font-size: 14px; margin-bottom: 25px; }
-        #dashboard { display: none; min-height: 100vh; }
-        .sidebar { width: 260px; background-color: #002b49; color: white; position: fixed; height: 100%; padding-top: 20px; }
-        .sidebar h3 { text-align: center; padding: 0 15px 20px; border-bottom: 1px solid #00406b; margin: 0; font-size: 18px; }
-        .sidebar ul { list-style: none; padding: 0; margin: 20px 0; }
-        .sidebar ul li { padding: 15px 25px; cursor: pointer; border-bottom: 1px solid #00385e; transition: 0.2s; }
-        .sidebar ul li:hover, .sidebar ul li.active { background-color: #00558f; border-left: 4px solid #00a8ff; }
-        .main-content { margin-left: 260px; padding: 25px; }
-        .topbar { background: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px; display: none; }
-        .card.active { display: block; }
-        .card h2 { color: #003366; margin-top: 0; border-bottom: 2px solid #f0f4f8; padding-bottom: 10px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; margin-bottom: 6px; color: #444; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccd6dd; border-radius: 5px; font-size: 14px; }
-        button { background-color: #00558f; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-weight: 600; }
-        button:hover { background-color: #003366; }
-        .btn-logout { background-color: #d9534f; padding: 8px 15px; font-size: 13px; }
-        .msg-box { background: #e8f4fd; padding: 15px; border-left: 4px solid #00558f; margin-bottom: 10px; border-radius: 4px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
-        th { background-color: #f4f7f6; color: #003366; }
-        .footer { text-align: center; margin-top: 30px; color: #777; font-size: 12px; }
-    </style>
+    <title>හ/ගැටමාන්න දකුණ මහා විද්‍යාලය - School ERP</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="loginScreen">
-    <div class="login-box">
-        <h2>හ/ගැටමාන්න දකුණ මහා විද්‍යාලය</h2>
-        <p>පාසල් කළමනාකරණ සහ දෙමාපිය සම්බන්ධතා පද්ධතිය</p>
-        <div class="form-group" style="text-align: left;"><label>පරිශීලක නාමය (Username):</label><input type="text" id="loginUser" placeholder="admin / teacher / parent"></div>
-        <div class="form-group" style="text-align: left;"><label>මුරපදය (Password):</label><input type="password" id="loginPass" placeholder="****"></div>
-        <button style="width: 100%;" onclick="handleLogin()">පද්ධතියට පිවිසෙන්න (Login)</button>
-        <p style="margin-top: 20px; font-size: 11px; color: #999;">Powered by Nuvia Labs</p>
+
+<header>
+    <div>
+        <h1>හ/ගැටමාන්න දකුණ මහා විද්‍යාලය</h1>
+        <small>පාසල් කළමනාකරණ සහ දෙමාපිය සම්බන්ධතා පද්ධතිය</small>
     </div>
-</div>
-<div id="dashboard">
-    <div class="sidebar">
-        <h3>හ/ගැටමාන්න දකුණ ම.වි.<br><small style="font-weight: normal; font-size: 12px;">School ERP (1 - 13 ශ්‍රේණි)</small></h3>
-        <ul id="staffMenu">
-            <li class="active" onclick="showTab('tab-classes', this)">1. පන්ති සහ ළමුන් (Classes)</li>
-            <li onclick="showTab('tab-attendance', this)">2. දෛනික පැමිණීම (Attendance)</li>
-            <li onclick="showTab('tab-marks', this)">3. විභාග ලකුණු (Exam Marks)</li>
-            <li onclick="showTab('tab-messages', this)">4. දෙමාපිය පණිවිඩ (Messages)</li>
-            <li onclick="showTab('tab-shuffle', this)">5. පන්ති මාරුව (Class Shuffling)</li>
-            <li id="menu-users" onclick="showTab('tab-users', this)">6. ගිණුම් සෑදීම (User Accounts)</li>
-        </ul>
-        <ul id="parentMenu" style="display: none;"><li class="active" onclick="showTab('tab-parent-portal', this)">දරුවාගේ තොරතුරු (Parent Portal)</li></ul>
+    <div id="user-info" class="hidden">
+        <span id="welcome-text" style="margin-right: 12px; font-weight: 600;"></span>
+        <button class="danger" onclick="logout()">පිටවන්න (Logout)</button>
     </div>
-    <div class="main-content">
-        <div class="topbar"><div><strong id="welcomeText">ආයුබෝවන්!</strong></div><button class="btn-logout" onclick="logout()">පිටවන්න (Logout)</button></div>
-        <div id="tab-classes" class="card active">
-            <h2>නව පන්තියක් නිර්මාණය කිරීම (1 - 13 ශ්‍රේණි)</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group"><label>වර්ෂය (Academic Year):</label><input type="number" id="cYear" value="2026"></div>
-                <div class="form-group"><label>ශ්‍රේණිය (Grade 1-13):</label><input type="number" id="cGrade" placeholder="1"></div>
-                <div class="form-group"><label>විෂය ධාරාව (Stream):</label><select id="cStream"><option value="General">General (1 - 11 ශ්‍රේණි)</option><option value="Science">Science (විද්‍යා)</option><option value="Commerce">Commerce (වාණිජ)</option><option value="Arts">Arts (කලා)</option><option value="Tech">Tech (තාක්ෂණවේදය)</option></select></div>
-                <div class="form-group"><label>පන්තිය (Section - A, B, C, D):</label><input type="text" id="cSection" placeholder="A"></div>
-            </div>
-            <div class="form-group"><label>පන්ති භාර ගුරුවරයාගේ නම:</label><input type="text" id="cTeacher" placeholder="උදා: සුනිල් පෙරේරා මයා"></div>
-            <button onclick="createClass()">පන්තිය සාදන්න</button>
-            <h2 style="margin-top: 30px;">නව ශිෂ්‍යයෙකු ලියාපදිංචි කිරීම</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group"><label>ඇතුළත් වීමේ අංකය (Admission No):</label><input type="text" id="sAdm" placeholder="2026-001"></div>
-                <div class="form-group"><label>ශිෂ්‍යයාගේ සම්පූර්ණ නම:</label><input type="text" id="sName" placeholder="කසුන් කල්හාර"></div>
-                <div class="form-group"><label>දෙමාපියන්ගේ නම:</label><input type="text" id="sParent" placeholder="ඩබ්. කේ. සිරිපාල"></div>
-                <div class="form-group"><label>දුරකථන අංකය:</label><input type="text" id="sPhone" placeholder="0771234567"></div>
-            </div>
-            <button onclick="createStudent()">ශිෂ්‍යයා ඇතුළත් කරන්න</button>
+</header>
+
+<div class="container">
+    <!-- LOGIN SECTION -->
+    <div id="login-section" class="card login-box">
+        <h2>පද්ධතියට පිවිසෙන්න (Login)</h2>
+        <label>විද්‍යුත් තැපෑල (Email):</label>
+        <input type="email" id="login-email" placeholder="උදා: admin@getamanna.lk">
+        <label>මුරපදය (Password):</label>
+        <input type="password" id="login-password" placeholder="මුරපදය ඇතුළත් කරන්න">
+        <button style="width: 100%;" onclick="login()">පිවිසෙන්න</button>
+        <p id="login-error" style="color: var(--danger); margin-top: 10px; font-size: 0.9rem;"></p>
+    </div>
+
+    <!-- STAFF DASHBOARD (ADMIN / TEACHER) -->
+    <div id="staff-dashboard" class="hidden">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('tab-classes', this)">1. පන්ති සහ ළමුන්</button>
+            <button class="tab-btn" onclick="showTab('tab-attendance', this)">2. දෛනික පැමිණීම</button>
+            <button class="tab-btn" onclick="showTab('tab-marks', this)">3. විභාග ලකුණු</button>
+            <button class="tab-btn" onclick="showTab('tab-messages', this)">4. දෙමාපිය පණිවිඩ</button>
+            <button class="tab-btn" onclick="showTab('tab-roles', this)">5. පරිශීලක අවසර (Roles)</button>
         </div>
-        <div id="tab-attendance" class="card">
-            <h2>දෛනික පැමිණීම සටහන් කිරීම (Daily Attendance)</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
-                <div class="form-group"><label>ඇතුළත් වීමේ අංකය (Admission No):</label><input type="text" id="attAdmNo" placeholder="2026-001"></div>
-                <div class="form-group"><label>පන්තිය (උදා: 2026-1-A):</label><input type="text" id="attClassCode" placeholder="2026-1-A"></div>
-                <div class="form-group"><label>තත්ත්වය:</label><select id="attStatus"><option value="Present">පැමිණ ඇත (Present)</option><option value="Absent">නොපැමිණ ඇත (Absent)</option></select></div>
+
+        <!-- TAB 1: CLASSES & STUDENTS -->
+        <div id="tab-classes" class="tab-content grid-2">
+            <div class="card">
+                <h3>නව පන්තියක් සෑදීම</h3>
+                <label>අධ්‍යයන වර්ෂය (Year):</label>
+                <input type="number" id="cls-year" value="2026">
+                <label>ශ්‍රේණිය (Grade):</label>
+                <input type="number" id="cls-grade" placeholder="උදා: 10">
+                <label>විෂය ධාරාව (Stream):</label>
+                <input type="text" id="cls-stream" value="General" placeholder="General / Science / Arts">
+                <label>පන්තිය (Section):</label>
+                <input type="text" id="cls-section" placeholder="උදා: A">
+                <label>පන්ති භාර ගුරුවරයා:</label>
+                <input type="text" id="cls-teacher" placeholder="ගුරුවරයාගේ නම">
+                <button onclick="createClass()">පන්තිය සාදන්න</button>
             </div>
-            <button onclick="markAttendance()">පැමිණීම සටහන් කරන්න</button>
-        </div>
-        <div id="tab-marks" class="card">
-            <h2>වාර විභාග ලකුණු ඇතුළත් කිරීම (Exam Marks)</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group"><label>ඇතුළත් වීමේ අංකය (Admission No):</label><input type="text" id="mAdmNo" placeholder="2026-001"></div>
-                <div class="form-group"><label>වර්ෂය:</label><input type="number" id="mYear" value="2026"></div>
-                <div class="form-group"><label>වාරය (Term 1, 2, 3):</label><input type="number" id="mTerm" placeholder="1"></div>
-                <div class="form-group"><label>විෂය (Subject):</label><input type="text" id="mSubject" placeholder="ගණිතය"></div>
+
+            <div class="card">
+                <h3>නව ශිෂ්‍යයෙකු ලියාපදිංචි කිරීම</h3>
+                <label>ඇතුළත් වීමේ අංකය (Admission No):</label>
+                <input type="text" id="stu-adm" placeholder="උදා: 4512">
+                <label>ශිෂ්‍යයාගේ සම්පූර්ණ නම:</label>
+                <input type="text" id="stu-name" placeholder="සම්පූර්ණ නම">
+                <label>පන්තිය තෝරන්න:</label>
+                <select id="stu-class-select"></select>
+                <label>දෙමාපියන්ගේ නම:</label>
+                <input type="text" id="stu-parent" placeholder="දෙමාපියන්ගේ නම">
+                <label>දුරකථන අංකය:</label>
+                <input type="text" id="stu-phone" placeholder="07XXXXXXXX">
+                <button class="success" onclick="createStudent()">ශිෂ්‍යයා ඇතුළත් කරන්න</button>
             </div>
-            <div class="form-group"><label>ලකුණු (Marks):</label><input type="number" id="mScore" placeholder="85"></div>
-            <button onclick="addMark()">ලකුණු ඇතුළත් කරන්න</button>
         </div>
-        <div id="tab-messages" class="card">
-            <h2>දෙමාපියන් වෙත පණිවිඩයක් යැවීම</h2>
-            <div class="form-group"><label>පන්තියේ කේතය (උදා: 2026-1-A):</label><input type="text" id="sendClassCode" placeholder="2026-1-A"></div>
-            <div class="form-group"><label>පණිවිඩය:</label><textarea id="messageText" rows="3" placeholder="හෙට දින විශේෂ රැස්වීමක් පැවැත්වේ..."></textarea></div>
+
+        <!-- TAB 2: BULK ATTENDANCE -->
+        <div id="tab-attendance" class="tab-content card hidden">
+            <h3>දෛනික පැමිණීම සටහන් කිරීම (Bulk Attendance)</h3>
+            <div class="grid-2">
+                <div>
+                    <label>පන්තිය තෝරන්න:</label>
+                    <select id="att-class-select" onchange="loadStudentsForAttendance()"></select>
+                </div>
+                <div>
+                    <label>දිනය (Date):</label>
+                    <input type="date" id="att-date">
+                </div>
+            </div>
+            <div id="att-list-container"></div>
+            <button id="save-att-btn" class="success hidden" onclick="saveBulkAttendance()">පැමිණීම සුරකින්න</button>
+        </div>
+
+        <!-- TAB 3: BULK EXAM MARKS -->
+        <div id="tab-marks" class="tab-content card hidden">
+            <h3>වාර විභාග ලකුණු ඇතුළත් කිරීම (Bulk Marks)</h3>
+            <div class="grid-2">
+                <div>
+                    <label>පන්තිය තෝරන්න:</label>
+                    <select id="mark-class-select" onchange="loadStudentsForMarks()"></select>
+                </div>
+                <div>
+                    <label>වාරය (Term):</label>
+                    <select id="mark-term">
+                        <option value="1">1 වන වාරය</option>
+                        <option value="2">2 වන වාරය</option>
+                        <option value="3">3 වන වාරය</option>
+                    </select>
+                </div>
+            </div>
+            <label>විෂය (Subject):</label>
+            <input type="text" id="mark-subject" placeholder="උදා: ගණිතය / විද්‍යාව / සිංහල">
+            <div id="marks-list-container"></div>
+            <button id="save-marks-btn" class="success hidden" onclick="saveBulkMarks()">සියලු ලකුණු සුරකින්න</button>
+        </div>
+
+        <!-- TAB 4: MESSAGES -->
+        <div id="tab-messages" class="tab-content card hidden">
+            <h3>දෙමාපියන් වෙත පණිවිඩයක් යැවීම</h3>
+            <label>පන්තිය තෝරන්න:</label>
+            <select id="msg-class-select" onchange="loadStaffMessages()"></select>
+            <label>පණිවිඩය:</label>
+            <textarea id="msg-text" rows="3" placeholder="පන්තියේ දෙමාපියන් වෙත පණිවිඩය මෙහි ලියන්න..."></textarea>
             <button onclick="sendMessage()">පණිවිඩය යවන්න</button>
-            <h2 style="margin-top: 30px;">පන්තියේ පණිවිඩ බැලීම</h2>
-            <div class="form-group"><label>පන්තියේ කේතය (උදා: 2026-1-A):</label><input type="text" id="viewClassCode" placeholder="2026-1-A"></div>
-            <button onclick="loadMessages()">පණිවිඩ පෙන්වන්න</button>
-            <div id="messagesList" style="margin-top: 15px;"></div>
+            <hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border);">
+            <h4>යැවූ පණිවිඩ</h4>
+            <div id="staff-msg-list"></div>
         </div>
-        <div id="tab-shuffle" class="card">
-            <h2>වාර්ෂික පන්ති මාරු කිරීම (1-A සිට 2-D දක්වා)</h2>
-            <p>නව වසර සඳහා ළමුන් අලුත් පන්තිවලට මාරු කිරීමට CSV ගොනුව තෝරන්න.</p>
-            <div class="form-group"><input type="file" id="csvFile" accept=".csv"></div>
-            <button onclick="uploadCSV()">CSV ගොනුව Upload කරන්න</button>
-        </div>
-        <div id="tab-users" class="card">
-            <h2>ගුරුවරුන් සහ දෙමාපියන් සඳහා Login ගිණුම් සෑදීම</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group"><label>ගිණුම් වර්ගය (Role):</label><select id="uRole"><option value="teacher">ගුරුවරයෙක් (Teacher)</option><option value="parent">දෙමාපියෙක් (Parent)</option></select></div>
-                <div class="form-group"><label>සම්පූර්ණ නම:</label><input type="text" id="uFullName" placeholder="උදා: කුමාරි මහත්මිය / සිරිපාල මයා"></div>
-                <div class="form-group"><label>පරිශීලක නාමය (Username):</label><input type="text" id="uName" placeholder="උදා: kumari හෝ 2026-001"></div>
-                <div class="form-group"><label>මුරපදය (Password):</label><input type="text" id="uPass" placeholder="උදා: 1234"></div>
+
+        <!-- TAB 5: USER ROLES -->
+        <div id="tab-roles" class="tab-content card hidden">
+            <h3>ගුරුවරුන් සහ දෙමාපියන්ගේ ගිණුම් සැකසීම</h3>
+            <p style="font-size: 0.9rem; color: #475569;">පළමුව Firebase Console හි Authentication තුළ Email/Password ගිණුම සාදා, එම Email ලිපිනය මෙහි ඇතුළත් කර අවසර (Role) ලබා දෙන්න.</p>
+            <label>පරිශීලක Email ලිපිනය:</label>
+            <input type="email" id="role-email" placeholder="උදා: parent1@getamanna.lk">
+            <label>සම්පූර්ණ නම:</label>
+            <input type="text" id="role-name" placeholder="නම ඇතුළත් කරන්න">
+            <label>තනතුර (Role):</label>
+            <select id="role-type" onchange="toggleAdmissionField()">
+                <option value="teacher">ගුරුවරයෙක් (Teacher)</option>
+                <option value="parent">දෙමාපියෙක් (Parent)</option>
+                <option value="admin">පරිපාලක (Admin)</option>
+            </select>
+            <div id="adm-link-box" class="hidden">
+                <label>දරුවාගේ ඇතුළත් වීමේ අංකය (Admission No):</label>
+                <input type="text" id="role-adm" placeholder="උදා: 4512">
             </div>
-            <div class="form-group"><label>දරුවාගේ ඇතුළත් වීමේ අංකය (Parent ගිණුමක් නම් පමණක්):</label><input type="text" id="uLinkedAdm" placeholder="උදා: 2026-001"></div>
-            <button onclick="createUserAccount()">නව ගිණුම සාදන්න</button>
+            <button onclick="saveUserRole()">අවසරය සුරකින්න</button>
         </div>
-        <div id="tab-parent-portal" class="card">
-            <h2>දරුවාගේ පාසල් තොරතුරු (Parent Portal)</h2>
-            <p><strong>ඇතුළත් වීමේ අංකය:</strong> <span id="pChildAdm"></span></p>
-            <div class="form-group"><label>දරුවාගේ පන්ති කේතය ඇතුළත් කරන්න (උදා: 2026-1-A):</label><input type="text" id="pClassCode" placeholder="2026-1-A"></div>
-            <button onclick="loadParentData()">දරුවාගේ සියලු විස්තර පෙන්වන්න</button>
-            <h3 style="margin-top: 25px; color: #003366;">1. පන්තියේ නිවේදන (Class Messages)</h3><div id="pMessagesList"></div>
-            <h3 style="margin-top: 25px; color: #003366;">2. දෛනික පැමිණීම (Attendance)</h3><div id="pAttendanceList"></div>
-            <h3 style="margin-top: 25px; color: #003366;">3. විභාග ලකුණු (Exam Marks)</h3><div id="pMarksList"></div>
+    </div>
+
+    <!-- PARENT PORTAL -->
+    <div id="parent-portal" class="hidden">
+        <div class="card">
+            <h2 id="parent-student-title">දරුවාගේ පාසල් තොරතුරු</h2>
+            <p id="parent-student-info" style="color: #475569; font-weight: 600;"></p>
         </div>
-        <div class="footer">හ/ගැටමාන්න දකුණ මහා විද්‍යාලය | Powered by Nuvia Labs</div>
+
+        <div class="card">
+            <h3>පන්ති නිවේදන (Class Notices)</h3>
+            <div id="parent-msg-list"></div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h3>දෛනික පැමිණීම (Attendance)</h3>
+                <div id="parent-att-list"></div>
+            </div>
+            <div class="card">
+                <h3>වාර විභාග ලකුණු (Exam Marks)</h3>
+                <div id="parent-marks-list"></div>
+            </div>
+        </div>
     </div>
 </div>
-<script type="module">
-    let currentUser = null;
-    let db = null;
-    let firestoreOps = {};
 
-    window.showTab = function(tabId, element) {
-        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-        document.querySelectorAll('.sidebar ul li').forEach(li => li.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        if (element) element.classList.add('active');
-    };
+<footer>
+    හ/ගැටමාන්න දකුණ මහා විද්‍යාලය | Powered by Nuvia Labs
+</footer>
 
-    async function initFirebase() {
-        try {
-            const base = ["https:", "", "://gstatic.com", "firebasejs", "10.12.2", ""].join("/");
-            const appMod = await import(base + "firebase-app.js");
-            const fsMod = await import(base + "firebase-firestore.js");
-            const proj = "getamanna-south-mv";
-            const firebaseConfig = {
-                apiKey: "AIzaSyAjYvet05v6rzEIzBhp4vtxw-C5IGWeW2c",
-                authDomain: proj + ".firebaseapp.com",
-                projectId: proj,
-                storageBucket: proj + ".firebasestorage.app",
-                messagingSenderId: "105394338078",
-                appId: "1:105394338078:web:0d8d2296c495a97e37310f",
-                measurementId: "G-RX0Q3YZ91W"
-            };
-            const app = appMod.initializeApp(firebaseConfig);
-            db = fsMod.getFirestore(app);
-            firestoreOps = fsMod;
-        } catch (e) { console.error(e); }
-    }
-    initFirebase();
-
-    window.handleLogin = async function() {
-        const u = document.getElementById("loginUser").value.trim();
-        const p = document.getElementById("loginPass").value.trim();
-        if (u === "admin" && p === "1234") {
-            currentUser = { full_name: "ප්‍රධාන පරිපාලක (විදුහල්පති)", role: "admin" };
-            openDashboard();
-            return;
-        }
-        if (!db) return alert("පද්ධතිය සම්බන්ධ වෙමින් පවතී, තත්පර 2කින් නැවත උත්සාහ කරන්න.");
-        const q = firestoreOps.query(firestoreOps.collection(db, "users"), firestoreOps.where("username", "==", u), firestoreOps.where("password", "==", p));
-        const snap = await firestoreOps.getDocs(q);
-        if (!snap.empty) {
-            currentUser = snap.docs[0].data();
-            openDashboard();
-        } else { alert("වැරදි පරිශීලක නාමයක් හෝ මුරපදයකි!"); }
-    };
-
-    function openDashboard() {
-        document.getElementById("loginScreen").style.display = "none";
-        document.getElementById("dashboard").style.display = "block";
-        document.getElementById("welcomeText").innerText = `ආයුබෝවන්, ${currentUser.full_name} (${currentUser.role.toUpperCase()})`;
-        if (currentUser.role === "parent") {
-            document.getElementById("staffMenu").style.display = "none";
-            document.getElementById("parentMenu").style.display = "block";
-            document.getElementById("pChildAdm").innerText = currentUser.linked_adm || "";
-            showTab("tab-parent-portal", document.querySelector("#parentMenu li"));
-        } else {
-            document.getElementById("staffMenu").style.display = "block";
-            document.getElementById("parentMenu").style.display = "none";
-            document.getElementById("menu-users").style.display = currentUser.role === "admin" ? "block" : "none";
-            showTab("tab-classes", document.querySelector("#staffMenu li"));
-        }
-    }
-
-    window.logout = function() {
-        currentUser = null;
-        document.getElementById("dashboard").style.display = "none";
-        document.getElementById("loginScreen").style.display = "flex";
-    };
-    window.createUserAccount = async function() {
-        const role = document.getElementById("uRole").value;
-        const fullName = document.getElementById("uFullName").value.trim();
-        const username = document.getElementById("uName").value.trim();
-        const password = document.getElementById("uPass").value.trim();
-        const linkedAdm = document.getElementById("uLinkedAdm").value.trim();
-        if (!fullName || !username || !password) return alert("සියලු විස්තර ඇතුළත් කරන්න!");
-        await firestoreOps.addDoc(firestoreOps.collection(db, "users"), { role, full_name: fullName, username, password, linked_adm: linkedAdm });
-        alert(`${fullName} සඳහා නව ගිණුම සාර්ථකව සාදන ලදී! (Username: ${username})`);
-    };
-
-    window.loadParentData = async function() {
-        const adm = currentUser.linked_adm;
-        const classCode = document.getElementById("pClassCode").value.trim();
-        const msgDiv = document.getElementById("pMessagesList");
-        msgDiv.innerHTML = "";
-        if (classCode) {
-            const qMsg = firestoreOps.query(firestoreOps.collection(db, "messages"), firestoreOps.where("class_code", "==", classCode));
-            const snapMsg = await firestoreOps.getDocs(qMsg);
-            snapMsg.forEach(d => { const m = d.data(); msgDiv.innerHTML += `<div class="msg-box"><strong>${m.sender_name} (${m.created_at}):</strong><p>${m.message_text}</p></div>`; });
-            if (snapMsg.empty) msgDiv.innerHTML = "<p>පණිවිඩ නොමැත.</p>";
-        }
-        const attDiv = document.getElementById("pAttendanceList");
-        const qAtt = firestoreOps.query(firestoreOps.collection(db, "attendance"), firestoreOps.where("admission_no", "==", adm));
-        const snapAtt = await firestoreOps.getDocs(qAtt);
-        let attHtml = "<table><tr><th>දිනය</th><th>පන්තිය</th><th>තත්ත්වය</th></tr>";
-        snapAtt.forEach(d => { const a = d.data(); attHtml += `<tr><td>${a.date}</td><td>${a.class_code}</td><td>${a.status}</td></tr>`; });
-        attDiv.innerHTML = snapAtt.empty ? "<p>පැමිණීමේ වාර්තා නොමැත.</p>" : attHtml + "</table>";
-
-        const markDiv = document.getElementById("pMarksList");
-        const qMark = firestoreOps.query(firestoreOps.collection(db, "marks"), firestoreOps.where("admission_no", "==", adm));
-        const snapMark = await firestoreOps.getDocs(qMark);
-        let markHtml = "<table><tr><th>වර්ෂය</th><th>වාරය</th><th>විෂය</th><th>ලකුණු</th></tr>";
-        snapMark.forEach(d => { const mk = d.data(); markHtml += `<tr><td>${mk.academic_year}</td><td>${mk.term}</td><td>${mk.subject}</td><td><strong>${mk.marks}</strong></td></tr>`; });
-        markDiv.innerHTML = snapMark.empty ? "<p>විභාග ලකුණු ඇතුළත් කර නොමැත.</p>" : markHtml + "</table>";
-    };
-
-    window.createClass = async function() {
-        const year = document.getElementById("cYear").value;
-        const grade = document.getElementById("cGrade").value;
-        const stream = document.getElementById("cStream").value;
-        const section = document.getElementById("cSection").value;
-        const classCode = stream === "General" ? `${year}-${grade}-${section}` : `${year}-${grade}-${stream}-${section}`;
-        await firestoreOps.addDoc(firestoreOps.collection(db, "classes"), { class_code: classCode, academic_year: parseInt(year), grade: parseInt(grade), stream, section, teacher_name: document.getElementById("cTeacher").value });
-        alert(`පන්තිය සාර්ථකව සාදන ලදී! පන්ති කේතය: ${classCode}`);
-    };
-
-    window.createStudent = async function() {
-        await firestoreOps.addDoc(firestoreOps.collection(db, "students"), { admission_no: document.getElementById("sAdm").value, full_name: document.getElementById("sName").value, parent_name: document.getElementById("sParent").value, parent_phone: document.getElementById("sPhone").value });
-        alert("ශිෂ්‍යයා Firebase Database වෙත සාර්ථකව ඇතුළත් කරන ලදී!");
-    };
-
-    window.markAttendance = async function() {
-        await firestoreOps.addDoc(firestoreOps.collection(db, "attendance"), { admission_no: document.getElementById("attAdmNo").value, class_code: document.getElementById("attClassCode").value, status: document.getElementById("attStatus").value, date: new Date().toISOString().split('T')[0] });
-        alert("පැමිණීම සටහන් කරන ලදී!");
-    };
-
-    window.addMark = async function() {
-        await firestoreOps.addDoc(firestoreOps.collection(db, "marks"), { admission_no: document.getElementById("mAdmNo").value, academic_year: parseInt(document.getElementById("mYear").value), term: parseInt(document.getElementById("mTerm").value), subject: document.getElementById("mSubject").value, marks: parseFloat(document.getElementById("mScore").value) });
-        alert("විභාග ලකුණු ඇතුළත් කරන ලදී!");
-    };
-
-    window.sendMessage = async function() {
-        await firestoreOps.addDoc(firestoreOps.collection(db, "messages"), { class_code: document.getElementById("sendClassCode").value, sender_name: currentUser ? currentUser.full_name : "ගුරුවරයා", message_text: document.getElementById("messageText").value, created_at: new Date().toLocaleString() });
-        alert("පන්තියේ දෙමාපියන් වෙත පණිවිඩය යොමු කරන ලදී!");
-    };
-
-    window.loadMessages = async function() {
-        const code = document.getElementById("viewClassCode").value;
-        const q = firestoreOps.query(firestoreOps.collection(db, "messages"), firestoreOps.where("class_code", "==", code));
-        const snapshot = await firestoreOps.getDocs(q);
-        const listDiv = document.getElementById("messagesList");
-        listDiv.innerHTML = "";
-        snapshot.forEach(doc => { const m = doc.data(); listDiv.innerHTML += `<div class="msg-box"><strong>${m.sender_name} (${m.created_at}):</strong><p>${m.message_text}</p></div>`; });
-        if (snapshot.empty) listDiv.innerHTML = "<p>මෙම පන්තිය සඳහා පණිවිඩ නොමැත.</p>";
-    };
-
-    window.uploadCSV = function() {
-        const file = document.getElementById("csvFile").files[0];
-        if (!file) return alert("කරුණාකර CSV ගොනුවක් තෝරන්න!");
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            const lines = e.target.result.split("\n").slice(1);
-            let count = 0;
-            for (let line of lines) {
-                if (!line.trim()) continue;
-                const [adm, year, grade, stream, section] = line.split(",");
-                const st = (stream || "General").trim();
-                const classCode = st === "General" ? `${year.trim()}-${grade.trim()}-${section.trim()}` : `${year.trim()}-${grade.trim()}-${st}-${section.trim()}`;
-                await firestoreOps.addDoc(firestoreOps.collection(db, "enrollments"), { admission_no: adm.trim(), academic_year: parseInt(year.trim()), class_code: classCode });
-                count++;
-            }
-            alert(`ළමුන් ${count} දෙනෙකු නව පන්තිවලට සාර්ථකව මාරු කරන ලදී!`);
-        };
-        reader.readAsText(file);
-    };
-</script>
+<script type="module" src="app.js"></script>
 </body>
 </html>
