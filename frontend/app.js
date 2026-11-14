@@ -1,6 +1,6 @@
 const firebaseConfig = {
     apiKey: "AIzaSyAjYvet05v6rzEIzBhp4vtxw-C5IGWeW2c",
-    authDomain: "://firebaseapp.com",
+    authDomain: "getamanna-south-mv.firebaseapp.com",
     projectId: "getamanna-south-mv",
     storageBucket: "getamanna-south-mv.firebasestorage.app",
     messagingSenderId: "105394338078",
