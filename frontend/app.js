@@ -1,14 +1,3 @@
-const firebaseConfig = {
-    apiKey: "AIzaSyAjYvet05v6rzEIzBhp4vtxw-C5IGWeW2c",
-    authDomain: "getamanna-south-mv.firebaseapp.com",
-    projectId: "getamanna-south-mv",
-    storageBucket: "getamanna-south-mv.firebasestorage.app",
-    messagingSenderId: "105394338078",
-    appId: "1:105394338078:web:0d8d2296c495a97e37310f",
-    measurementId: "G-RX0Q3YZ91W"
-};
-
-firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
