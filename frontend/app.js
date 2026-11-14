@@ -1,6 +1,7 @@
-import { initializeApp } from "https://gstatic.com";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://gstatic.com";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, where } from "https://gstatic.com";
+import { initializeApp } from "https://esm.sh";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://esm.sh";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, where } from "https://esm.sh";
+
 
 
 
