@@ -59,7 +59,7 @@ window.login = async () => {
     try {
         await auth.signInWithEmailAndPassword(email, pass);
     } catch (e) {
-        errEl.innerText = "පිවිසීම අසාර්ථකයි: Email හෝ Password පරීක්ෂා කරන්න.";
+           errEl.innerText = "දෝෂය: " + e.message;
     }
 };
 
