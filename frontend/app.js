@@ -1,13 +1,6 @@
-import { initializeApp } from "https://esm.sh";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://esm.sh";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, where } from "https://esm.sh";
-
-
-
-
 const firebaseConfig = {
     apiKey: "AIzaSyAjYvet05v6rzEIzBhp4vtxw-C5IGWeW2c",
-    authDomain: "getamanna-south-mv.firebaseapp.com",
+    authDomain: "://firebaseapp.com",
     projectId: "getamanna-south-mv",
     storageBucket: "getamanna-south-mv.firebasestorage.app",
     messagingSenderId: "105394338078",
@@ -15,9 +8,9 @@ const firebaseConfig = {
     measurementId: "G-RX0Q3YZ91W"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
 
 let currentUserData = null;
 
@@ -27,17 +20,18 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 // 1. AUTH STATE & LOGIN
-onAuthStateChanged(auth, async (user) => {
+auth.onAuthStateChanged(async (user) => {
     if (user) {
         document.getElementById("login-section").classList.add("hidden");
         document.getElementById("user-info").classList.remove("hidden");
 
-        const roleDoc = await getDoc(doc(db, "user_roles", user.email.toLowerCase()));
-        if (roleDoc.exists()) {
+        const roleRef = db.collection("user_roles").doc(user.email.toLowerCase());
+        const roleDoc = await roleRef.get();
+        if (roleDoc.exists) {
             currentUserData = roleDoc.data();
         } else {
             currentUserData = { email: user.email, name: "ප්‍රධාන පරිපාලක", role: "admin", admissionNo: "" };
-            await setDoc(doc(db, "user_roles", user.email.toLowerCase()), currentUserData);
+            await roleRef.set(currentUserData);
         }
 
         document.getElementById("welcome-text").innerText = `ආයුබෝවන්, ${currentUserData.name} (${currentUserData.role.toUpperCase()})`;
@@ -63,13 +57,13 @@ window.login = async () => {
     const errEl = document.getElementById("login-error");
     errEl.innerText = "";
     try {
-        await signInWithEmailAndPassword(auth, email, pass);
+        await auth.signInWithEmailAndPassword(email, pass);
     } catch (e) {
         errEl.innerText = "පිවිසීම අසාර්ථකයි: Email හෝ Password පරීක්ෂා කරන්න.";
     }
 };
 
-window.logout = () => signOut(auth);
+window.logout = () => auth.signOut();
 
 window.showTab = (tabId, btn) => {
     document.querySelectorAll(".tab-content").forEach(el => el.classList.add("hidden"));
@@ -89,13 +83,13 @@ window.createClass = async () => {
     if (!grade || !section) return alert("ශ්‍රේණිය සහ පන්තිය (Section) ඇතුළත් කරන්න.");
     const classLabel = `${year} - ${grade} ශ්‍රේණිය (${stream}) - ${section}`;
 
-    await addDoc(collection(db, "classes"), { year, grade, stream, section, teacher, classLabel });
+    await db.collection("classes").add({ year, grade, stream, section, teacher, classLabel });
     alert("නව පන්තිය සාර්ථකව සාදන ලදී!");
     await loadAllClasses();
 };
 
 async function loadAllClasses() {
-    const snap = await getDocs(collection(db, "classes"));
+    const snap = await db.collection("classes").get();
     let options = `<option value="">-- පන්තිය තෝරන්න --</option>`;
     snap.forEach(d => {
         const c = d.data();
@@ -115,7 +109,7 @@ window.createStudent = async () => {
     const phone = document.getElementById("stu-phone").value.trim();
 
     if (!admissionNo || !fullName || !classId) return alert("ඇතුළත් වීමේ අංකය, නම සහ පන්තිය අනිවාර්ය වේ.");
-    await setDoc(doc(db, "students", admissionNo), { admissionNo, fullName, classId, parentName, phone });
+    await db.collection("students").doc(admissionNo).set({ admissionNo, fullName, classId, parentName, phone });
     alert("ශිෂ්‍යයා සාර්ථකව ලියාපදිංචි කරන ලදී!");
     document.getElementById("stu-adm").value = "";
     document.getElementById("stu-name").value = "";
@@ -127,8 +121,7 @@ window.loadStudentsForAttendance = async () => {
     const btn = document.getElementById("save-att-btn");
     if (!classId) { container.innerHTML = ""; btn.classList.add("hidden"); return; }
 
-    const q = query(collection(db, "students"), where("classId", "==", classId));
-    const snap = await getDocs(q);
+    const snap = await db.collection("students").where("classId", "==", classId).get();
     if (snap.empty) { container.innerHTML = "<p>මෙම පන්තියේ ළමුන් නොමැත.</p>"; btn.classList.add("hidden"); return; }
 
     let html = `<table><tr><th>ඇතුළත් වීමේ අංකය</th><th>ශිෂ්‍යයාගේ නම</th><th>පැමිණීම</th></tr>`;
@@ -154,7 +147,7 @@ window.saveBulkAttendance = async () => {
     for (let chk of checks) {
         const adm = chk.dataset.adm;
         const docId = `${date}_${adm}`;
-        await setDoc(doc(db, "attendance", docId), {
+        await db.collection("attendance").doc(docId).set({
             admissionNo: adm,
             studentName: chk.dataset.name,
             classId,
@@ -172,8 +165,7 @@ window.loadStudentsForMarks = async () => {
     const btn = document.getElementById("save-marks-btn");
     if (!classId) { container.innerHTML = ""; btn.classList.add("hidden"); return; }
 
-    const q = query(collection(db, "students"), where("classId", "==", classId));
-    const snap = await getDocs(q);
+    const snap = await db.collection("students").where("classId", "==", classId).get();
     if (snap.empty) { container.innerHTML = "<p>මෙම පන්තියේ ළමුන් නොමැත.</p>"; btn.classList.add("hidden"); return; }
 
     let html = `<table><tr><th>ඇතුළත් වීමේ අංකය</th><th>ශිෂ්‍යයාගේ නම</th><th>ලකුණු (0 - 100)</th></tr>`;
@@ -201,7 +193,7 @@ window.saveBulkMarks = async () => {
         if (inp.value !== "") {
             const adm = inp.dataset.adm;
             const docId = `${classId}_T${term}_${subject}_${adm}`;
-            await setDoc(doc(db, "marks", docId), {
+            await db.collection("marks").doc(docId).set({
                 admissionNo: adm,
                 classId,
                 term,
@@ -219,7 +211,7 @@ window.sendMessage = async () => {
     const text = document.getElementById("msg-text").value.trim();
     if (!classId || !text) return alert("පන්තිය තෝරා පණිවිඩය ඇතුළත් කරන්න.");
 
-    await addDoc(collection(db, "messages"), {
+    await db.collection("messages").add({
         classId,
         sender: currentUserData.name,
         text,
@@ -234,8 +226,7 @@ window.loadStaffMessages = async () => {
     const classId = document.getElementById("msg-class-select").value;
     const list = document.getElementById("staff-msg-list");
     if (!classId) return list.innerHTML = "";
-    const q = query(collection(db, "messages"), where("classId", "==", classId));
-    const snap = await getDocs(q);
+    const snap = await db.collection("messages").where("classId", "==", classId).get();
     let html = "";
     snap.forEach(d => {
         const m = d.data();
@@ -257,7 +248,7 @@ window.saveUserRole = async () => {
     const admissionNo = document.getElementById("role-adm").value.trim();
 
     if (!email || !name) return alert("Email සහ නම ඇතුළත් කරන්න.");
-    await setDoc(doc(db, "user_roles", email), { email, name, role, admissionNo });
+    await db.collection("user_roles").doc(email).set({ email, name, role, admissionNo });
     alert("පරිශීලක අවසරය සාර්ථකව සුරකින ලදී!");
 };
 
@@ -267,16 +258,15 @@ async function loadParentPortal(admissionNo) {
         document.getElementById("parent-student-title").innerText = "දරුවාගේ තොරතුරු සම්බන්ධ කර නොමැත.";
         return;
     }
-    const stuDoc = await getDoc(doc(db, "students", admissionNo));
-    if (!stuDoc.exists()) {
+    const stuDoc = await db.collection("students").doc(admissionNo).get();
+    if (!stuDoc.exists) {
         document.getElementById("parent-student-title").innerText = "ශිෂ්‍ය තොරතුරු හමු නොවීය.";
         return;
     }
     const stu = stuDoc.data();
     document.getElementById("parent-student-title").innerText = `ශිෂ්‍යයා: ${stu.fullName} (ඇතුළත් වීමේ අංකය: ${stu.admissionNo})`;
 
-    const msgQ = query(collection(db, "messages"), where("classId", "==", stu.classId));
-    const msgSnap = await getDocs(msgQ);
+    const msgSnap = await db.collection("messages").where("classId", "==", stu.classId).get();
     let msgHtml = "";
     msgSnap.forEach(d => {
         const m = d.data();
@@ -284,8 +274,7 @@ async function loadParentPortal(admissionNo) {
     });
     document.getElementById("parent-msg-list").innerHTML = msgHtml || "<p>නව නිවේදන නොමැත.</p>";
 
-    const attQ = query(collection(db, "attendance"), where("admissionNo", "==", admissionNo));
-    const attSnap = await getDocs(attQ);
+    const attSnap = await db.collection("attendance").where("admissionNo", "==", admissionNo).get();
     let attHtml = `<table><tr><th>දිනය</th><th>තත්ත්වය</th></tr>`;
     attSnap.forEach(d => {
         const a = d.data();
@@ -294,8 +283,7 @@ async function loadParentPortal(admissionNo) {
     attHtml += `</table>`;
     document.getElementById("parent-att-list").innerHTML = attSnap.empty ? "<p>පැමිණීමේ වාර්තා නොමැත.</p>" : attHtml;
 
-    const markQ = query(collection(db, "marks"), where("admissionNo", "==", admissionNo));
-    const markSnap = await getDocs(markQ);
+    const markSnap = await db.collection("marks").where("admissionNo", "==", admissionNo).get();
     let markHtml = `<table><tr><th>වාරය</th><th>විෂය</th><th>ලකුණු</th></tr>`;
     let total = 0, count = 0;
     markSnap.forEach(d => {
