@@ -1,6 +1,7 @@
-import { initializeApp } from "/__/firebase/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "/__/firebase/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, where } from "/__/firebase/10.12.2/firebase-firestore.js";
+import { initializeApp } from "https://gstatic.com";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://gstatic.com";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, query, where } from "https://gstatic.com";
+
 
 
 const firebaseConfig = {
